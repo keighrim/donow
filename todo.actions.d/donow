@@ -4,7 +4,7 @@
 # ====================================================
 # Configuration
 # ====================================================
-DESKTOP_NOTIFICATION=true        # Requires libnotify
+DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
 
 
@@ -19,7 +19,7 @@ if [ x"$1" = x"donow" ]; then
         echo "      todo.sh donow #ITEM"
         echo
         exit
-    }    
+    }
     ITEM=$2
     shift
     shift
@@ -48,32 +48,32 @@ update_activity()
             # updating minutes counter
             new_summary=`echo "$no_pri_summary" | sed -E "s/min:[0-9]+/min:$curr_time_worked/g"`
             "$TODO_SH" command replace $ITEM "$new_summary"
-        fi  
-    fi  
+        fi
+    fi
     exit 1
 }
 
 # Wrapper function to pop-up a notification using libnotify
 signal()
 {
-    [[ $DESKTOP_NOTIFICATION = true ]] && notify-send -u critical -i appointment-soon -t 300 "$1" "$2"     
+    [[ $DESKTOP_NOTIFICATION = true ]] && notify-send -u critical -i appointment-soon -t 300 "$1" "$2"
 }
 
 # Actual counter function
 do_now()
-{    
+{
     local SUMMARY="$1"
     local COUNTER=0
     local MILESTONE=$REMINDER_INTERVAL
 
     echo "Working on: ${SUMMARY} "
-    
+
     while true; do
         sleep $ONE_MINUTE
-        
+
         let "COUNTER = $COUNTER + 1"
         WORKED_TIME=$COUNTER
-        
+
         echo -en "\r["$SUMMARY"] $COUNTER minute(s) passed"
 
         if [ $COUNTER = $MILESTONE ]; then
