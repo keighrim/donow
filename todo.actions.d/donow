@@ -4,7 +4,7 @@
 # ====================================================
 # Configuration
 # ====================================================
-DESKTOP_NOTIFICATION=false        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
+DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
 EVIDENCE_LOG=$TODO_DIR/evidence.log
 
