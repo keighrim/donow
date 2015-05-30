@@ -4,8 +4,9 @@
 # ====================================================
 # Configuration
 # ====================================================
-DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
+DESKTOP_NOTIFICATION=false        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
+EVIDENCE_LOG=$TODO_DIR/evidence.log
 
 
 
@@ -59,6 +60,14 @@ signal()
     [[ $DESKTOP_NOTIFICATION = true ]] && notify-send -u critical -i appointment-soon -t 300 "$1" "$2"
 }
 
+elog()
+{
+    if [ ! -f ${EVIDENCE_LOG} ] ; then
+        touch ${EVIDENCE_LOG}
+    fi
+    echo $(date "+%F %T") "$1" >> ${EVIDENCE_LOG}
+}
+
 # Actual counter function
 do_now()
 {
@@ -67,6 +76,7 @@ do_now()
     local MILESTONE=$REMINDER_INTERVAL
 
     echo "Working on: ${SUMMARY} "
+    elog ${SUMMARY}
 
     while true; do
         sleep $ONE_MINUTE
@@ -87,6 +97,11 @@ do_now()
 # ====================================================
 # Main
 # ====================================================
+
+if [ "x$line" = "xstop" ] ; then
+    elog stop
+    exit 0
+fi
 
 # get the right activity and its summary
 counter=0
