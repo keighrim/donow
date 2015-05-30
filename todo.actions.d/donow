@@ -36,6 +36,17 @@ ONE_MINUTE=${ONE_MINUTE-60}      # for tests reasons. Do not modify
 # ====================================================
 # Functions
 # ====================================================
+
+# Append a time-stamped (local time) entry to the $EVIDENCE_LOG.
+# Create log file if it doesn't exist.
+elog()
+{
+    if [ ! -f ${EVIDENCE_LOG} ] ; then
+        touch ${EVIDENCE_LOG}
+    fi
+    echo $(date "+%F %T") "$1" >> ${EVIDENCE_LOG}
+}
+
 update_activity()
 {
     if [[ ! $WORKED_TIME -eq 0 ]]; then
@@ -51,6 +62,7 @@ update_activity()
             "$TODO_SH" command replace $ITEM "$new_summary"
         fi
     fi
+    elog "stop : ${SUMMARY}"
     exit 1
 }
 
@@ -58,14 +70,6 @@ update_activity()
 signal()
 {
     [[ $DESKTOP_NOTIFICATION = true ]] && notify-send -u critical -i appointment-soon -t 300 "$1" "$2"
-}
-
-elog()
-{
-    if [ ! -f ${EVIDENCE_LOG} ] ; then
-        touch ${EVIDENCE_LOG}
-    fi
-    echo $(date "+%F %T") "$1" >> ${EVIDENCE_LOG}
 }
 
 # Actual counter function
@@ -76,7 +80,7 @@ do_now()
     local MILESTONE=$REMINDER_INTERVAL
 
     echo "Working on: ${SUMMARY} "
-    elog ${SUMMARY}
+    elog "start: ${SUMMARY}"
 
     while true; do
         sleep $ONE_MINUTE
@@ -98,10 +102,6 @@ do_now()
 # Main
 # ====================================================
 
-if [ "x$line" = "xstop" ] ; then
-    elog stop
-    exit 0
-fi
 
 # get the right activity and its summary
 counter=0
