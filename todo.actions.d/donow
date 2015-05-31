@@ -43,7 +43,7 @@ elog()
     if [ ! -z ${EVIDENCE_LOG} ] && [ ! -f ${EVIDENCE_LOG} ] ; then
         touch ${EVIDENCE_LOG}
     fi
-    if [ ! -f ${EVIDENCE_LOG} ] ; then
+    if [ -f ${EVIDENCE_LOG} ] ; then
         echo $(date "+%F %T") "$1" >> ${EVIDENCE_LOG}
     fi
 }
