@@ -17,19 +17,32 @@ When the pattern "min:number" already exists, Donow just updates the counter.
 ## Example of use
 
 ```
-    $ todo.sh list                                                                                                                               
+    $ todo.sh list
     1 design Python interface for Todo.txt
     2 write a basic description of donow addon min:5
     --
     TODO: 2 of 2 tasks shown
-    $ todo.sh donow 1                                                                                                                            
-    Working on: design Python interface for Todo.txt 
+    $ todo.sh donow 1
+    Working on: design Python interface for Todo.txt
     [design Python interface for Todo.txt] 11 minute(s) passed^C
     1 design Python interface for Todo.txt min:11
-    $ todo.sh donow 2                                                                                                                            
-    Working on: write a basic description of donow addon min:5 
+    $ todo.sh donow 2
+    Working on: write a basic description of donow addon min:5
     [write a basic description of donow addon min:5] 12 minute(s) passed^C
     2 write a basic description of donow addon min:5
     TODO: Replaced task with:
     2 write a basic description of donow addon min:17
 ```
+
+## Optional Log
+
+If you would like to log each time you start or stop working on a task,
+uncomment the line
+
+```
+#EVIDENCE_LOG=$TODO_DIR/evidence.log
+```
+
+in the donow script and change the file name of the log as you like.
+By default, it will create the log in evidence.log in the same
+directory as todo.txt.
