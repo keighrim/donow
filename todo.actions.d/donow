@@ -6,7 +6,7 @@
 # ====================================================
 DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
-
+#EVIDENCE_LOG=$TODO_DIR/evidence.log
 
 
 ITEM=false
@@ -35,6 +35,19 @@ ONE_MINUTE=${ONE_MINUTE-60}      # for tests reasons. Do not modify
 # ====================================================
 # Functions
 # ====================================================
+
+# Append a time-stamped (local time) entry to the $EVIDENCE_LOG.
+# Create log file if it doesn't exist.
+elog()
+{
+    if [ ! -z ${EVIDENCE_LOG} ] && [ ! -f ${EVIDENCE_LOG} ] ; then
+        touch ${EVIDENCE_LOG}
+    fi
+    if [ -f ${EVIDENCE_LOG} ] ; then
+        echo $(date "+%F %T") "$1" >> ${EVIDENCE_LOG}
+    fi
+}
+
 update_activity()
 {
     if [[ ! $WORKED_TIME -eq 0 ]]; then
@@ -50,6 +63,7 @@ update_activity()
             "$TODO_SH" command replace $ITEM "$new_summary"
         fi
     fi
+    elog "stop : ${SUMMARY}"
     exit 1
 }
 
@@ -67,6 +81,7 @@ do_now()
     local MILESTONE=$REMINDER_INTERVAL
 
     echo "Working on: ${SUMMARY} "
+    elog "start: ${SUMMARY}"
 
     while true; do
         sleep $ONE_MINUTE
@@ -87,6 +102,7 @@ do_now()
 # ====================================================
 # Main
 # ====================================================
+
 
 # get the right activity and its summary
 counter=0
