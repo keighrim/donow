@@ -3,7 +3,7 @@
 TODO_NOTES_DIR=$TODO_DIR/notes
 TODO_NOTE_TAG="note"
 TODO_NOTE_TEMPLATE="XXX"
-TODO_NOTE_EXT=".txt"
+TODO_NOTE_EXT=".rst"
 TODO_NOTE_ARCHIVE="$TODO_NOTES_DIR/archive$TODO_NOTE_EXT"
 
 usage() {
@@ -36,7 +36,7 @@ getnotenamefromtext() {
     # Postcondition:
     #     $notename contains note name, if task has note.
 
-    notename=$(echo "$1" | grep -o " $TODO_NOTE_TAG:[^ .]*${TODO_NOTE_EXT}" | grep -o "[^:]*${TODO_NOTE_EXT}")
+    notename=$(echo "$1" | grep -o " $TODO_NOTE_TAG:[^ .]*\.link" | grep -o "[^:]*\.link")
 }
 
 editnote() {
@@ -98,10 +98,10 @@ case "$TODO_NOTE_ACTION" in
     notelink=$(mktemp "$TODO_NOTES_DIR/${TODO_NOTE_TEMPLATE}.link")
     notename=$(basename "$notelink")
     title=$(echo "$todo" | sed -e "s/^\(x ....-..-.. \)\?//" -e "s/^(.) \?//")
-    filename="${title}${TODO_NOTE_EXT}"
+    sanitized_title=$(echo ${title} | sed "s/ /_/g")
+    filename="${sanitized_title}${TODO_NOTE_EXT}"
     echo \# $title > "$TODO_NOTES_DIR/${filename}"
 
-    echo "Linking $TODO_NOTES_DIR/${filename} to ${notelink}"
     ln -sf "$TODO_NOTES_DIR/${filename}" "${notelink}"
 
     # Append note tag to task
@@ -144,6 +144,7 @@ case "$TODO_NOTE_ACTION" in
 
 "__rmfromtext")
     getnotenamefromtext "$*"
+    set -x
     rm -f "$TODO_NOTES_DIR/$notename"
     ;;
 
