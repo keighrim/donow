@@ -74,6 +74,11 @@ getnotefilepath () {
     fi
 }
 
+__remove_file (){
+    filepath=$1
+    [ -f ${filepath} ] && rm ${filepath}
+}
+
 if [ "$1" = "usage" ]
 then
     usage
@@ -95,11 +100,11 @@ case "$TODO_NOTE_ACTION" in
     [ -d "$TODO_NOTES_DIR" ]  || mkdir -p "$TODO_NOTES_DIR" 2> /dev/null || die "Error: $TODO_NOTES_DIR is not a directory"
 
     # Create file
-    notelink=$(mktemp "$TODO_NOTES_DIR/${TODO_NOTE_TEMPLATE}.link")
-    notename=$(basename "$notelink")
     title=$(echo "$todo" | sed -e "s/^\(x ....-..-.. \)\?//" -e "s/^(.) \?//")
     sanitized_title=$(echo ${title} | sed "s/ /_/g")
     filename="${sanitized_title}${TODO_NOTE_EXT}"
+    notelink=$(mktemp "$TODO_NOTES_DIR/${TODO_NOTE_TEMPLATE}.link")
+    notename=$(basename "$notelink")
     echo \# $title > "$TODO_NOTES_DIR/${filename}"
 
     ln -sf "$TODO_NOTES_DIR/${filename}" "${notelink}"
@@ -138,14 +143,21 @@ case "$TODO_NOTE_ACTION" in
     then
         cat "$TODO_NOTES_DIR/${notename}" >> "$TODO_NOTE_ARCHIVE"
         echo >> "$TODO_NOTE_ARCHIVE" ## Add blank line
-        rm -f "$TODO_NOTES_DIR/${notename}"
+        REALFILE=$(readlink -f "$TODO_NOTES_DIR/${notename}")
+        echo "Removing link: $TODO_NOTES_DIR/${notename}"
+        echo "Removing real note: $REALFILE"
+        __remove_file "$TODO_NOTES_DIR/${notename}"
+        __remove_file "$REALFILE"
     fi
     ;;
 
 "__rmfromtext")
     getnotenamefromtext "$*"
-    set -x
-    rm -f "$TODO_NOTES_DIR/$notename"
+    REALFILE=$(readlink -f "$TODO_NOTES_DIR/${notename}")
+    __remove_file "$TODO_NOTES_DIR/$notename"
+    __remove_file "$REALFILE"
+
+    echo "$*"
     ;;
 
 *)
