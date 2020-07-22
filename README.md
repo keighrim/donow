@@ -1,20 +1,38 @@
 Time tracker for Todo.txt
 =========================
 
-Donow add-on allows to keep track of the total time spent on an activity
+Donow add-on allows to keep track of the total time spent on an activity. This software was originally developed at https://github.com/clobrano/todo.txt-cli under the GPL3 license. 
 
-## Keep track of current work
+# Keep track of current work
 
-Donow writes on the stdout the **current activity and the time spent on it** since the last start. Each 10 minutes (configurable) a **desktop notification** will remind you the current running activity, to avoid to forget to stop the timer when not needed anymore.
+Donow writes on the stdout the **current activity and the time spent on it** since the last start. Each X minutes (default=10) a **desktop notification** will remind you the current running activity, to avoid to forget to stop the timer when not needed anymore.
+  * Desktop notificaions are sent via `notify-send` (`libnotify` pacakge) on Linux, and via apple script on Mac. Notification is not supported on Windows at for moment. 
 
-![donow-reminder](./donow-reminder.png)
 
-## Donow item format
+# Logging
 
-When the timer is stopped using CTRL-C, donow will append a substring *min:total-time-spent* (being **time** expressed in minutes) to the activity description.
-When the pattern "min:number" already exists, Donow just updates the counter.
+##### All logging mechanisms below can be toggled by editing `donow` file. 
+When the timer is stopped using CTRL-C, donow will log worked time if configured. 
 
-## Example of use
+## todo.txt logging
+
+This will append a substring *min:total-time-spent* (being **time** expressed in minutes) to the todo.txt item.
+When the pattern "min:number" already exists, donow just updates the counter.
+
+## Text file logging
+
+This will log start and end time of your work in a text file. East start and end will be logged as seprate lines
+
+## CSV file logging 
+This will log start and end time of your work in a CSV file. Each session will be logged on a single line, with following columns ; 
+```
+Year, Month, Day, Time, Duration, Start (seconds since epoch), End (seconds since epoch)
+```
+NB: The output function is very simple and cannot handle edge cases such as commas (`0x002c`) and double quotes (`0x0022`) in the task item. Please refrain from using those characters in todo.txt file until the function gets updated. 
+
+ 
+
+# Example of use
 
 ```
     $ todo.sh list
@@ -33,16 +51,3 @@ When the pattern "min:number" already exists, Donow just updates the counter.
     TODO: Replaced task with:
     2 write a basic description of donow addon min:17
 ```
-
-## Optional Log
-
-If you would like to log each time you start or stop working on a task,
-uncomment the line
-
-```
-#EVIDENCE_LOG=$TODO_DIR/evidence.log
-```
-
-in the donow script and change the file name of the log as you like.
-By default, it will create the log in evidence.log in the same
-directory as todo.txt.

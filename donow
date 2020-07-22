@@ -7,7 +7,7 @@
 DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
 ## use different log formats
-# EVIDENCE_LOG=$TODO_DIR/evidence.log
+# TEXTLOG=$TODO_DIR/evidence.log
 # CSVLOG=$TODO_DIR/logs.csv
 ## comment to disable adding worked time to todo.txt file directly 
 TIME_ON_TASK=1
@@ -45,15 +45,15 @@ ONE_MINUTE=${ONE_MINUTE-60}      # for tests reasons. Do not modify
 # Functions
 # ====================================================
 
-# Append a time-stamped (local time) entry to the $EVIDENCE_LOG.
+# Append a time-stamped (local time) entry to the $TEXTLOG.
 # Create log file if it doesn't exist.
 elog()
 {
-    if [ ! -z "${EVIDENCE_LOG}" ] && [ ! -f "${EVIDENCE_LOG}" ] ; then
-        touch "${EVIDENCE_LOG}"
+    if [ ! -z "${TEXTLOG}" ] && [ ! -f "${TEXTLOG}" ] ; then
+        touch "${TEXTLOG}"
     fi
-    if [ -f "${EVIDENCE_LOG}" ] ; then
-        echo $(date "+%F %T") "$1" >> "${EVIDENCE_LOG}"
+    if [ -f "${TEXTLOG}" ] ; then
+        echo $(date "+%F %T") "$1" >> "${TEXTLOG}"
     fi
 }
 
@@ -125,7 +125,7 @@ do_now()
     STIME=$(date)
 
     echo "Working on: ${SUMMARY} "
-    elog "start: ${SUMMARY}"
+    textlog "start: ${SUMMARY}"
 
     while true; do
         sleep $ONE_MINUTE
