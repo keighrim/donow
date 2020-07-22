@@ -47,7 +47,7 @@ ONE_MINUTE=${ONE_MINUTE-60}      # for tests reasons. Do not modify
 
 # Append a time-stamped (local time) entry to the $TEXTLOG.
 # Create log file if it doesn't exist.
-elog()
+textlog()
 {
     if [ ! -z "${TEXTLOG}" ] && [ ! -f "${TEXTLOG}" ] ; then
         touch "${TEXTLOG}"
@@ -100,7 +100,7 @@ update_activity()
         fi
         }
     fi
-    elog "stop : ${SUMMARY}"
+    textlog "stop : ${SUMMARY}"
     exit 1
 }
 
