@@ -80,7 +80,7 @@ signal()
         if [ "$(uname)" == "Darwin" ]; then
             osascript -e "display notification \"$2\" with title \"$1\""
         else
-            notify-send -u critical -i appointment-soon -t 300 "$1" "$2"
+            notify-send --hint=int:transient:1 -i appointment-soon -t 300 "$1" "$2"
         fi
     fi
 }
