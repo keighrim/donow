@@ -117,12 +117,7 @@ do_now()
 
 
 # get the right activity and its summary
-counter=0
-while read line
-do
-    let "counter = counter + 1"
-    [ $counter = $ITEM ] && summary=$line
-done < "$TODO_FILE"
+summary=$(sed "${ITEM}!d" < $TODO_FILE)
 
 [[ -z "$summary" ]] && echo "Could not find activity number $ITEM" && exit 0
 
