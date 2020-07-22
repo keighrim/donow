@@ -6,8 +6,9 @@
 # ====================================================
 DESKTOP_NOTIFICATION=true        # Requires libnotify (on Ubuntu based: sudo apt-get install libnotify-bin)
 REMINDER_INTERVAL=10             # Intervals between desktop notifications
-#EVIDENCE_LOG=$TODO_DIR/evidence.log
-
+## use different log formats
+# EVIDENCE_LOG=$TODO_DIR/evidence.log
+# CSVLOG=$TODO_DIR/logs.csv
 
 ITEM=false
 
@@ -54,9 +55,35 @@ elog()
     fi
 }
 
+csvlog()
+{
+    if [ ! -z "${CSVLOG}" ] && [ ! -f "${CSVLOG}" ] ; then
+        echo "Year, Month, Day, Time, Duration, Start (seconds since epoch), End (seconds since epoch)" > "${CSVLOG}"
+    fi
+    if [ -f "${CSVLOG}" ] ; then
+        ETIME=$(date)
+        SEPOCH=$(date -d "$STIME" +%s)
+        EEPOCH=$(date -d "$ETIME" +%s)
+        # pruning priority, creation date, and completion from summary
+        pruned_summary=$(echo "$1" | \
+            sed -E "s_\([A-Z]+\) __g" | \
+            sed -E "s/[0-9]{4}(-[0-9]{2}){2}//g" | \
+            sed -E "s/\s*^x\s+//g"
+                    )
+        printf "%s,%s,%s,%s,%s,%s\n" \
+            $(date -d "$STIME" +"%Y,%m,%d") \
+            $(date -d "$STIME" +%T) \
+            $(date -d "0 $EEPOCH sec - $SEPOCH sec" +%H:%M:%S) \
+            $SEPOCH \
+            $EEPOCH \
+            "$pruned_summary" >> "$CSVLOG"
+    fi
+}
+
 update_activity()
 {
     if [[ ! $WORKED_TIME -eq 0 ]]; then
+        csvlog "$SUMMARY"
         echo
         if [[ $curr_time_worked = false ]]; then
             "$TODO_FULL_SH" command append $ITEM "min:$WORKED_TIME"
@@ -91,6 +118,7 @@ do_now()
     local SUMMARY="$1"
     local COUNTER=0
     local MILESTONE=$REMINDER_INTERVAL
+    STIME=$(date)
 
     echo "Working on: ${SUMMARY} "
     elog "start: ${SUMMARY}"
