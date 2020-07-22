@@ -9,6 +9,8 @@ REMINDER_INTERVAL=10             # Intervals between desktop notifications
 ## use different log formats
 # EVIDENCE_LOG=$TODO_DIR/evidence.log
 # CSVLOG=$TODO_DIR/logs.csv
+## comment to disable adding worked time to todo.txt file directly 
+TIME_ON_TASK=1
 
 ITEM=false
 
@@ -84,6 +86,7 @@ update_activity()
 {
     if [[ ! $WORKED_TIME -eq 0 ]]; then
         csvlog "$SUMMARY"
+        [ -z $TIME_ON_TASK ] || {
         echo
         if [[ $curr_time_worked = false ]]; then
             "$TODO_FULL_SH" command append $ITEM "min:$WORKED_TIME"
@@ -95,6 +98,7 @@ update_activity()
             new_summary=`echo "$no_pri_summary" | sed -E "s/min:[0-9]+/min:$curr_time_worked/g"`
             "$TODO_FULL_SH" command replace $ITEM "$new_summary"
         fi
+        }
     fi
     elog "stop : ${SUMMARY}"
     exit 1
